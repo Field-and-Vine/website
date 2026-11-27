@@ -1,0 +1,27 @@
+<?php
+/**
+ * Title: Footer
+ * Slug: field-and-vine/footer
+ * Categories: footer
+ * Block Types: core/template-part/footer
+ * Description: Site footer with site title, tagline and navigation.
+ *
+ * @package Field_And_Vine
+ */
+
+?>
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|50"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--50)">
+	<!-- wp:group {"align":"wide","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"top"}} -->
+	<div class="wp-block-group alignwide">
+		<!-- wp:group {"layout":{"type":"default"}} -->
+		<div class="wp-block-group">
+			<!-- wp:site-title {"level":0} /-->
+			<!-- wp:site-tagline /-->
+		</div>
+		<!-- /wp:group -->
+		<!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"}} /-->
+	</div>
+	<!-- /wp:group -->
+</div>
+<!-- /wp:group -->
