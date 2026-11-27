@@ -14,7 +14,7 @@ The theme and supporting code for field-vine.com, a WordPress site hosted on WP 
 - A merge to `main` deploys to Development through the `development` environment.
 - A published release deploys the theme to Production through the `production` environment, after its required reviewer approves.
 
-Each deploy copies only the files this repository holds, removes nothing on the server, and clears the site caches. A Production deploy stops if the release's commit is not on `main`; the reviewer still confirms that the release points at `main` before approving.
+Each deploy writes only the files this repository holds and clears the site caches. The theme folder on the server is kept identical to the repository's, so a file removed from the theme here is removed there; nothing else in `wp-content` is removed. A Production deploy stops if the release's commit is not on `main`; the reviewer still confirms that the release points at `main` before approving.
 
 Each GitHub environment holds its own settings: the WP Engine environment name (variable `WPE_ENV`), the site address (variable `SITE_URL`) and a deploy key (secret `WPE_SSHG_KEY_PRIVATE`) belonging to a WP Engine user that can reach only that environment.
 

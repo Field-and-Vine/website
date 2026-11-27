@@ -44,8 +44,10 @@ jobs:
             exit 1
           fi
 
-      # The default flags copy without deleting, so each sync writes only the
-      # repository's files and removes nothing on the server.
+      # The theme sync adds --delete to the action's default flags, so the
+      # server's theme folder matches the repository's: files removed from the
+      # theme here are removed there. Deletion stays inside that folder, which
+      # REMOTE_PATH names; the trailing slashes on both paths keep it there.
       - name: Deploy theme
         uses: wpengine/github-action-wpe-site-deploy@9192d288134986f65e5b13c49d41fdaf7f30e56d # v4.0.0
         with:
@@ -53,8 +55,11 @@ jobs:
           WPE_ENV: ${{ vars.WPE_ENV }}
           SRC_PATH: wp-content/themes/field-and-vine/
           REMOTE_PATH: wp-content/themes/field-and-vine/
+          FLAGS: "-azvr --inplace --delete --exclude='.*'"
           CACHE_CLEAR: FALSE
 
+      # The plugin sync keeps the default flags (no --delete), so it writes
+      # the one file and removes nothing else in mu-plugins.
       - name: Deploy Development must-use plugin and clear caches
         uses: wpengine/github-action-wpe-site-deploy@9192d288134986f65e5b13c49d41fdaf7f30e56d # v4.0.0
         with:

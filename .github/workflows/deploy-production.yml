@@ -57,7 +57,9 @@ jobs:
           fi
 
       # Production receives the theme only; the must-use plugin is for
-      # Development. The default flags copy without deleting.
+      # Development. The sync adds --delete to the action's default flags, so
+      # the server's theme folder matches the repository's. Deletion stays
+      # inside that folder, which REMOTE_PATH names.
       - name: Deploy theme and clear caches
         uses: wpengine/github-action-wpe-site-deploy@9192d288134986f65e5b13c49d41fdaf7f30e56d # v4.0.0
         with:
@@ -65,4 +67,5 @@ jobs:
           WPE_ENV: ${{ vars.WPE_ENV }}
           SRC_PATH: wp-content/themes/field-and-vine/
           REMOTE_PATH: wp-content/themes/field-and-vine/
+          FLAGS: "-azvr --inplace --delete --exclude='.*'"
           CACHE_CLEAR: TRUE
