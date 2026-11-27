@@ -1,0 +1,3 @@
+# Agent Instructions
+
+The source of truth for Field and Vine's instructions and operating documents is the GitHub repository Field-and-Vine/company-library. At the start of each session, connect to it (attach it, or fetch its current main in a working copy) and follow its startup instructions. If a session permission check blocks a connection step, ask the user to approve that step in the chat. If the library can't be connected or its startup instructions can't be read for any other reason, try once more; if it still fails, stop before any other work, report what failed, and wait for direction.

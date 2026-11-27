@@ -1,0 +1,71 @@
+name: Deploy to Production
+
+# A published release deploys through the production environment, which waits
+# for its required reviewer before the job can read the deploy key. The
+# environment holds this deploy's WP Engine environment name (variable
+# WPE_ENV), the site address (variable SITE_URL) and its own deploy key
+# (secret WPE_SSHG_KEY_PRIVATE), whose WP Engine user reaches Production only.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: ${{ !github.event.release.prerelease }}
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ vars.SITE_URL }}
+    steps:
+      - name: Require the environment's settings
+        env:
+          WPE_ENV: ${{ vars.WPE_ENV }}
+        run: |
+          if [ -z "$WPE_ENV" ]; then
+            echo "The production environment has no WPE_ENV variable." >&2
+            exit 1
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      # Catches a release made from a commit that was never merged. It runs
+      # from the release's own commit, so it cannot replace the reviewer's
+      # check that the release points at main.
+      - name: Stop unless the release's commit is on main
+        run: |
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "The release's commit is not on main; nothing was deployed." >&2
+            exit 1
+          fi
+
+      - name: Check PHP syntax and refuse symbolic links
+        run: |
+          find wp-content -name '*.php' -print0 | xargs -0 -n1 php -l
+          if [ -n "$(find . -path ./.git -prune -o -type l -print)" ]; then
+            echo "Symbolic links are not deployed; replace them with files." >&2
+            exit 1
+          fi
+
+      # Production receives the theme only; the must-use plugin is for
+      # Development. The sync adds --delete to the action's default flags, so
+      # the server's theme folder matches the repository's. Deletion stays
+      # inside that folder, which REMOTE_PATH names.
+      - name: Deploy theme and clear caches
+        uses: wpengine/github-action-wpe-site-deploy@9192d288134986f65e5b13c49d41fdaf7f30e56d # v4.0.0
+        with:
+          WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }}
+          WPE_ENV: ${{ vars.WPE_ENV }}
+          SRC_PATH: wp-content/themes/field-and-vine/
+          REMOTE_PATH: wp-content/themes/field-and-vine/
+          FLAGS: "-azvr --inplace --delete --exclude='.*'"
+          CACHE_CLEAR: TRUE

@@ -1,0 +1,24 @@
+name: Lint
+
+# Runs on pull requests without any secret: no environment, read-only token.
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  php-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check PHP syntax and refuse symbolic links
+        run: |
+          find wp-content -name '*.php' -print0 | xargs -0 -n1 php -l
+          if [ -n "$(find . -path ./.git -prune -o -type l -print)" ]; then
+            echo "Symbolic links are not deployed; replace them with files." >&2
+            exit 1
+          fi
